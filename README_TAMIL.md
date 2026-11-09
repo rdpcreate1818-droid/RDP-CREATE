@@ -1,60 +1,78 @@
-# RDP CREATE AI Agent — Starter Kit
+# RDP CREATE — Website + AI Chat Starter
 
-இந்த starter project உங்கள் Netlify website-க்கு multilingual AI chat + WhatsApp Cloud API integration-க்கான அடிப்படை அமைப்பு.
+இந்த project-ல் premium black & gold RDP CREATE website, Tamil/English/Telugu AI enquiry chat, Netlify Functions மற்றும் WhatsApp Cloud API webhook starter உள்ளது.
 
-## இதில் உள்ளவை
-- Tamil / Telugu / English language selector
-- Website AI chat widget
-- Netlify Function மூலம் OpenAI Responses API call
-- WhatsApp Cloud API webhook verification + incoming message handler
-- WhatsApp reply send function
-- Environment variable placeholders; எந்த secret-உம் source code-ல் இல்லை
+## Folder அமைப்பு
 
-## முக்கியம்
-இது starter implementation. உங்கள் தற்போதைய website-ன் source code / Git repository இல்லாமல் அதை நேரடியாக மாற்ற முடியாது. முதலில் தனி Netlify test site-ல் deploy செய்து சோதிக்கவும். தற்போதைய website-ஐ backup செய்யாமல் overwrite செய்ய வேண்டாம்.
+```text
+RDP-CREATE/
+├── public/
+│   └── index.html
+├── netlify/
+│   └── functions/
+│       ├── chat.mjs
+│       ├── whatsapp-send.mjs
+│       └── whatsapp-webhook.mjs
+├── netlify.toml
+├── package.json
+└── README_TAMIL.md
+```
 
-## 1. Files-ஐ உங்கள் website project-ல் சேர்க்கவும்
-இந்த ZIP-ஐ unzip செய்யவும். `public/index.html` என்பது demo chat page. உங்கள் website ஏற்கனவே HTML/CSS/JS அல்லது React/Vite project ஆக இருந்தால், அதில் உள்ள design-ஐ அழிக்காமல் chat widget-ஐ இணைக்க வேண்டும். `netlify/functions/` மற்றும் `netlify.toml`-ஐ project root-ல் சேர்க்கவும்.
+## 1. முதலில் Website-ஐத் தனியாகச் சோதிக்கவும்
 
-## 2. Environment variables அமைக்கவும்
-Netlify Dashboard → உங்கள் site → Project configuration → Environment variables.
-Functions scope-க்கு இவற்றை அமைக்கவும்:
+- இந்த ZIP-ஐ Extract செய்யவும்.
+- GitHub repository-ல் மேலே உள்ள folder structure-ஐ அப்படியே upload செய்யவும்.
+- `public/index.html` தான் website முகப்புப் பக்கம்.
+- `public/public` என்ற இரட்டை folder உருவாக்க வேண்டாம்.
+- `.github/workflows`-ல் பழைய webpack build workflow இருந்தால் அதை நீக்கவும். இந்த static website-க்கு webpack build தேவையில்லை.
+
+## 2. WhatsApp எண்ணைச் சேர்க்கவும்
+
+`public/index.html` கோப்பில் இந்த வரியைத் தேடவும்:
+
+```js
+const WHATSAPP_NUMBER = "91YOURNUMBER";
+```
+
+`91` உட்பட country code உடன் உங்கள் WhatsApp Business எண்ணை digits மட்டும் வைத்து மாற்றவும். உதாரணம்: `919876543210`. இது public website-ல் காட்டப்படும்; பயன்படுத்த அனுமதிக்கப்பட்ட business எண்ணை மட்டும் இடவும்.
+
+## 3. Netlify deploy
+
+1. Netlify-ல் account உருவாக்கி GitHub-ஐ connect செய்யவும்.
+2. `rdpcreate1818-droid/RDP-CREATE` repository-ஐத் தேர்வு செய்யவும்.
+3. Build command காலியாக விடவும்.
+4. Publish directory: `public`.
+5. Deploy செய்யவும்.
+
+`netlify.toml` ஏற்கனவே publish directory மற்றும் functions directory-ஐ அமைக்கிறது. Build command தேவையில்லை.
+
+## 4. Website AI Chat அமைப்பு
+
+Netlify → Site configuration / Environment variables பகுதியில்:
 
 - `OPENAI_API_KEY` = உங்கள் OpenAI API key
-- `OPENAI_MODEL` = உங்கள் account-ல் கிடைக்கும் model ID
-- `WHATSAPP_TOKEN` = Meta WhatsApp Cloud API access token
-- `WHATSAPP_PHONE_NUMBER_ID` = Meta-வின் Phone Number ID
-- `WHATSAPP_VERIFY_TOKEN` = நீங்களே உருவாக்கும் நீளமான random verification string
-- `WHATSAPP_APP_SECRET` = Meta App Secret (production webhook signature verification சேர்க்கத் தேவை)
-- `WHATSAPP_API_VERSION` = Meta dashboard/docs-ல் தற்போது ஆதரிக்கப்படும் Graph API version (உதா. `vXX.X` என்பதை உண்மையான version-ஆல் மாற்றவும்)
-- `WHATSAPP_SEND_SECRET` = manual send endpoint பயன்படுத்தினால் நீங்களே உருவாக்கும் secret
+- `OPENAI_MODEL` = உங்கள் API account-ல் கிடைக்கும் model ID
 
-Secrets-ஐ HTML/JavaScript-ல் எழுத வேண்டாம். Environment variables மாற்றிய பின் redeploy செய்யவும்.
+இவை அமைக்கப்படாவிட்டாலும் chat demo fallback பதில் தரும். API key-ஐ HTML, GitHub அல்லது browser code-ல் ஒருபோதும் இட வேண்டாம். Environment variables அமைத்த பின் redeploy செய்யவும்.
 
-## 3. AI chat சோதனை
-Deploy செய்த பின் `https://YOUR-SITE.netlify.app/api/chat` endpoint POST request பெறும். Website widget-ல் ஒரு message அனுப்பவும். API key இல்லையெனில் demo fallback பதில் காட்டும்.
+## 5. WhatsApp Cloud API (விருப்பமான மேம்பட்ட அமைப்பு)
 
-## 4. WhatsApp Cloud API அமைப்பு
-1. Meta for Developers-ல் account மற்றும் app உருவாக்கவும்.
-2. WhatsApp product சேர்த்து test phone number / business phone number அமைக்கவும்.
-3. `WHATSAPP_TOKEN` மற்றும் `WHATSAPP_PHONE_NUMBER_ID` நிரப்பவும்.
-4. Webhook callback URL: `https://YOUR-SITE.netlify.app/api/whatsapp-webhook`
-5. Verify token: `WHATSAPP_VERIFY_TOKEN`-ல் வைத்த அதே value.
-6. `messages` webhook event subscribe செய்யவும்.
-7. Meta test recipient-க்கு message அனுப்பி சோதிக்கவும். Incoming text messages-க்கு AI reply அனுப்பும் starter flow சேர்க்கப்பட்டுள்ளது.
+Environment variables:
 
-Production-க்கு முன் `X-Hub-Signature-256` webhook signature validation, rate limiting, spam prevention, duplicate-message protection, database, durable queue, logging, customer consent, privacy notice ஆகியவற்றை முழுமைப்படுத்தவும். இந்த starter-ல் `WHATSAPP_APP_SECRET` வைத்திருப்பது மட்டும் signature validation செய்துவிடாது; production deployment-க்கு signature verification code சேர்க்கப்பட வேண்டும். WhatsApp API version-ஐ Meta docs-ல் சரிபார்த்து environment variable-ல் அமைக்கவும்.
+- `WHATSAPP_TOKEN`
+- `WHATSAPP_PHONE_NUMBER_ID`
+- `WHATSAPP_API_VERSION` (Meta dashboard-ல் தற்போது ஆதரிக்கப்படும் வடிவம், உதா. `vXX.X` அல்ல; உண்மையான version)
+- `WHATSAPP_VERIFY_TOKEN` (நீங்களே உருவாக்கும் ரகசிய string)
+- `WHATSAPP_APP_SECRET` (Meta App Secret; webhook POST signature சரிபார்க்க இது கட்டாயம்)
+- `WHATSAPP_SEND_SECRET` (server-side send endpoint பயன்படுத்தினால்)
 
-## 5. Booking / payments / customer records
-இப்போது chat assistant customer enquiry-க்கு உதவும். உண்மையான booking records, payment status, file delivery, admin dashboard ஆகியவற்றுக்கு database (உதா. Supabase/Postgres) மற்றும் admin authentication சேர்க்க வேண்டும். AI-க்கு payment completed என்று தானாக ஊகிக்க அனுமதிக்க வேண்டாம்; verified payment provider/database status-ஐ மட்டுமே நம்பவும்.
+Meta webhook callback URL: `https://YOUR-SITE.netlify.app/api/whatsapp-webhook`
 
-## 6. Deploy
-- GitHub-ல் உங்கள் project repository-க்கு files commit செய்யவும்; அல்லது Netlify CLI பயன்படுத்தவும்.
-- Netlify build settings உங்கள் existing framework-க்கு ஏற்ப இருக்க வேண்டும்.
-- Test deploy வெற்றியடைந்த பிறகே production site-க்கு மாற்றங்களை merge செய்யவும்.
+Webhook POST-களுக்கு `X-Hub-Signature-256` சரிபார்ப்பு சேர்க்கப்பட்டுள்ளது. WhatsApp Cloud API setup, token permissions, business verification மற்றும் message template rules ஆகியவை Meta account-ஐப் பொறுத்தது. இவை அமைக்கப்படும் வரை WhatsApp auto-reply இயங்காது.
 
-## Official documentation
-- OpenAI API: https://developers.openai.com/api/docs
-- Netlify Functions: https://docs.netlify.com/build/functions/
-- Netlify environment variables: https://docs.netlify.com/build/functions/environment-variables/
-- WhatsApp Cloud API: https://developers.facebook.com/docs/whatsapp/cloud-api/
+## பாதுகாப்பு குறிப்புகள்
+
+- API keys / tokens-ஐ GitHub-ல் commit செய்ய வேண்டாம்.
+- `whatsapp-send` endpoint secret header இல்லாமல் அனுப்ப அனுமதிக்காது. Secret-ஐ frontend-ல் வைக்க வேண்டாம்.
+- Production-க்கு முன் rate limiting, duplicate webhook event handling, customer consent, privacy notice மற்றும் monitoring சேர்க்கவும்.
+- இந்த starter தானாக booking/payment confirmation உருவாக்காது. உண்மையான booking database மற்றும் payment verification தனியாக அமைக்கப்பட வேண்டும்.

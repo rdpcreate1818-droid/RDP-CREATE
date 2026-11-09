@@ -1,9 +1,12 @@
 {
-  "name": "rdp-create-ai-agent-starter",
+  "name": "rdp-create-website",
   "version": "1.0.0",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "netlify dev"
+  },
+  "engines": {
+    "node": ">=20"
   }
 }
